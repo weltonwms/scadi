@@ -1,0 +1,87 @@
+body{
+    background-color: #f5f8fa;
+}
+section.page-login {
+    margin-top: 4%;
+}
+
+div.dataTables_wrapper div.dataTables_filter {
+    text-align: left;
+}
+
+div.dataTables_wrapper div.dataTables_length {
+    text-align: right;
+}
+
+.modal-header {
+    background-color: #428bca;
+    color: #fff;
+
+}
+
+.preload-img{
+    text-align: center;
+}
+
+.header-logo{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.gladio-login{
+    margin-bottom: 10px;
+}
+
+.sisvie-login{
+
+    margin-top: 14px;
+
+    /*  color: white; 
+      text-shadow: black 0.1em 0.1em 0.2em;*/
+
+    /*color: #1F5DC2;*/
+}
+
+.sisvie-login h4{
+    font-weight: 700;
+}
+
+.header-logo h3{
+    font-weight: 700;
+}
+
+label.error{
+    color:red;
+}
+
+.double-input .form-control {
+    width: 50%;
+    display: inline-block;
+
+}
+
+.input-group.double-input {
+    display: inherit;
+    margin-bottom: 50px;
+
+}
+
+.dangerColor{
+    color: red;
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+    background-color: #e4e4e4;
+}
+
+table.dataTable thead .sorting::after, table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::after, table.dataTable thead .sorting_asc_disabled::after, table.dataTable thead .sorting_desc_disabled::after {
+    position: inherit;
+    display: inline;
+    padding-left: 4px;
+    margin-left: 4px;
+    top: 2px !important;
+}
+
+.marginl4{
+    margin-left: 4px;
+}

@@ -1,0 +1,25 @@
+section.page-login {
+    margin-top: 4%;
+}
+
+div.dataTables_wrapper div.dataTables_filter {
+    text-align: left;
+}
+
+div.dataTables_wrapper div.dataTables_length {
+    text-align: right;
+}
+
+.modal-header {
+    background-color: #428bca;
+    color: #fff;
+    
+}
+
+.preload-img{
+    text-align: center;
+}
+
+label.error{
+    color:red;
+}

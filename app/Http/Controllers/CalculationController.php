@@ -12,7 +12,7 @@ class CalculationController extends Controller {
 
     public function __construct() {
 
-        $this->middleware('calculation')->except('index');
+        $this->middleware('calculation')->except(['index','atualizarTodosCalculations']);
     }
 
     public function index() {
@@ -63,10 +63,11 @@ class CalculationController extends Controller {
         endforeach;
         return $dados;
     }
-
-    private function trataDados($request, $indicator) {
+    
+   private function trataDados($request, $indicator) {
         $dados = $request->all();
         $dados['data_inicio'] = \App\Helpers\CalculationDate::getDataInicio($dados, $indicator);
+        $dados['data_final'] = \App\Helpers\CalculationDate::getDataFinal($dados['data_inicio'],$indicator);
         $dados['indicator_id'] = $indicator->id;
         $dados['user_id'] = auth()->user()->id;
         $dados['atual']=1; //indicação de que o registro é o último; analisar essa responsabilidade para o model
@@ -89,6 +90,18 @@ class CalculationController extends Controller {
         
 
         return $dados;
+    }
+    
+    public function atualizarTodosCalculations(){
+        $calculations=Calculation::all();
+      
+        foreach($calculations as $calculation):
+            $indicator=$calculation->indicator;
+            $data_final=\App\Helpers\CalculationDate::getDataFinal($calculation->data_inicio,$indicator);
+           $calculation->data_final=$data_final;
+           $calculation->save();
+            
+        endforeach;
     }
 
 }

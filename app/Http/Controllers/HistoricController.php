@@ -19,7 +19,7 @@ class HistoricController extends Controller {
         $dados = [
             'calculations' => Calculation::getByFiltro(),
             'indicators' => Indicator::pluck('sigla', 'id')->prepend('--Selecione--', ''),
-            'users' => User::pluck('name', 'id')->prepend('--Selecione--', ''),
+           
         ];
         //dd($dados['calculations']);
        

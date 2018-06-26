@@ -26,10 +26,12 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::group(['middleware' => 'auth'], function() {
     Route::resource('indices', 'IndexController');
     Route::resource('indicators', 'IndicatorController');
+    Route::get('indicators/{indicator}/clonar', 'IndicatorController@clonar')->name('indicators.clone');
     Route::resource('groups', 'GroupController');
     Route::get('calculations', 'CalculationController@index')->name('calculations.index');
     Route::get('calculations/{indicator}/create', 'CalculationController@create')->name('calculations.create');
     Route::get('calculations/{indicator}/show', 'CalculationController@showHistory')->name('calculations.show-history');
+    
     Route::post('calculations/{indicator}', 'CalculationController@store')->name('calculations.store');
     Route::get('historics','HistoricController@index')->name('historics.index');
     Route::put('historics/validar','HistoricController@validar')->name('historics.validar');
@@ -38,6 +40,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/users-ldap', 'UserController@usersLdap');
     Route::get('/militares-json', 'UserController@getMilitaresJson');
     Route::resource('users', 'UserController');
+    Route::get('/atualizarDatasFimCalculations', 'CalculationController@atualizarTodosCalculations');
 
 
 

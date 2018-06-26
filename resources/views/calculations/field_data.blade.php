@@ -2,8 +2,8 @@
 
 use App\Helpers\CalculationDate;
 
-$mes_atual = (int) date('m');
-$ano_atual = (int) date('Y');
+$mes_atual = CalculationDate::getMesAtual();
+$ano_atual = CalculationDate::getAnoAtual();
 $semestre_atual = CalculationDate::getSemestreAtual();
 $trimestre_atual = CalculationDate::getTrimestreAtual();
 $bimestre_atual = CalculationDate::getBimestreAtual();

@@ -2,11 +2,11 @@
 
 $disabled_numerador=!$indicator->numerador_habilitado?['disabled'=>'disabled']:[];
 $valor_numerador=!$indicator->numerador_habilitado?$indicator->numerador_valor_padrao:null;
-$obs_numerador=!$indicator->numerador_habilitado?'Valor Padrão':null;
+$obs_numerador=$indicator->numerador_obs_padrao;
 
 $disabled_denominador=!$indicator->denominador_habilitado?['disabled'=>'disabled']:[];
 $valor_denominador=!$indicator->denominador_habilitado?$indicator->denominador_valor_padrao:null;
-$obs_denominador=!$indicator->denominador_habilitado?'Valor Padrão':null;
+$obs_denominador=$indicator->denominador_obs_padrao;
 $nome_numerador=$indicator->tipo==1?"Numerador":"Variável";
 $valoresBinarios = ['' => '--Selecione--',1 => 'Sim',  0 => 'Não'];
 ?>

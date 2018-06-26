@@ -3,12 +3,22 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Observers\IndicatorObserver;
+use App\Helpers\IndicatorHelper;
 
 class Indicator extends Model {
+    
+    private static $allChildren=[];
 
-    protected $fillable = ["tipo", 'sigla', 'description', 'periodicidade', 'index_id', 'name',
+    protected $fillable = ["tipo", 'sigla', 'subtitulo', 'description', 'periodicidade', 'index_id', 'name',
         'numerador_name', 'numerador_sigla', 'numerador_description', 'numerador_valor_padrao', 'numerador_habilitado',
-        'denominador_name', 'denominador_sigla', 'denominador_description', 'denominador_valor_padrao', 'denominador_habilitado'];
+        'denominador_name', 'denominador_sigla', 'denominador_description', 'denominador_valor_padrao',
+        'numerador_obs_padrao', 'denominador_obs_padrao', 'denominador_habilitado', 'peso', 'parent_id'];
+
+    public static function boot() {
+        parent::boot();
+        Indicator::observe(new IndicatorObserver());
+    }
 
     public function index() {
         return $this->belongsTo("App\Index");
@@ -25,6 +35,51 @@ class Indicator extends Model {
     public function getLastCalculation() {
         return $this->calculations->sortByDesc('created_at')->first();
     }
+
+    public function indicatorParent() {
+        return $this->belongsTo('App\Indicator', 'parent_id');
+    }
+
+    public function children() {
+        return $this->hasMany("App\Indicator", 'parent_id');
+    }
+
+    public function setLevel() {
+        $level = 0;
+        if ($this->indicatorParent):
+            $levelParent = (int) $this->indicatorParent->level;
+            $level = $levelParent + 1;
+        endif;
+        $this->level = $level;
+    }
+
+    
+    
+    public function getAllChildren(){
+       
+        return IndicatorHelper::getAllChildren($this);        
+       
+    }
+    
+    /**
+     * Método que atualiza o nível de todos os filhos,
+     * útil pois se o pai muda de nível, deve ser refletido nos filhos.
+     */
+    
+    public function saveLevelChildren(){
+         return IndicatorHelper::saveLevelChildren($this);
+    }
+    
+    public function getListFormChildren(){
+        $lista= collect($this->getAllChildren());
+        $proibidos=$lista->pluck('id');
+        $list=Indicator::Where('id', '<>', $this->id)->whereNotIn('id',$proibidos);
+        return $list->pluck('sigla', 'id')->prepend('-Sem pai-', '');
+    }
+
+
+
+
 
     public function getDateLastCalculation() {
         $lastCalculation = $this->getLastCalculation();

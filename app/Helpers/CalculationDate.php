@@ -17,6 +17,42 @@ class CalculationDate {
         return $anos;
     }
 
+    public static function getAnosUsados() {
+        $query = \DB::table('calculations')
+                ->select(\DB::raw('YEAR(`data_inicio`) as ano'))
+                ->distinct()
+                ->get();
+        return $query->pluck('ano', 'ano');
+    }
+
+    public static function getTodosPeriodos() {
+        $periodos = array_merge(self::getMeses(), self::getBimestres(), self::getTrimestres(), self::getSemestres());
+        return collect($periodos);
+    }
+
+    /**
+     * O método getPeriodoFromTodosPeriodos() retorna um stdClass com inicio e fim de um período.
+     * Para informar um período o método recebe um código do tipo de período: Janeiro, fevereiro, 1º Bim, etc.
+     * Recebe também o ano.
+     * @param int $periodo_tipo código referente à chave do array de CalculationDate::getTodosPeriodos
+     * @param int $periodo_ano ano do período
+     * @return sdtClass  Objeto com atributos Carbon: inicio e final, referente ao período.
+     */
+    public static function getPeriodoFromTodosPeriodos($periodo_tipo, $periodo_ano) {
+        $periodo = new \stdClass();
+        if ($periodo_tipo < 12)://meses
+            $periodo = self::auxMeses($periodo_tipo, $periodo_ano);
+        elseif ($periodo_tipo < 18): //bimestres
+            $periodo = self::auxBimestres($periodo_tipo, $periodo_ano);
+        elseif ($periodo_tipo < 22): //trimestres
+            $periodo = self::auxTrimestres($periodo_tipo, $periodo_ano);
+        elseif ($periodo_tipo < 24): //semestres
+            $periodo = self::auxSemestres($periodo_tipo, $periodo_ano);
+
+        endif;
+        return $periodo;
+    }
+
     public static function getSemestres() {
         $semestres = [1 => "1º Semestre", 2 => "2º Semestre"];
         return $semestres;
@@ -41,7 +77,8 @@ class CalculationDate {
     }
 
     public static function getSemestreAtual() {
-        $mes_atual = (int) date('m');
+        $mes_atual = self::getMesAtual();
+
         if ($mes_atual > 6) {
             return 2;
         }
@@ -49,7 +86,8 @@ class CalculationDate {
     }
 
     public static function getTrimestreAtual() {
-        $mes_atual = (int) date('m');
+        $mes_atual = self::getMesAtual();
+
         if ($mes_atual < 4) {
             return 1;
         } elseif ($mes_atual < 7) {
@@ -62,7 +100,8 @@ class CalculationDate {
     }
 
     public static function getBimestreAtual() {
-        $mes_atual = (int) date('m');
+        $mes_atual = self::getMesAtual();
+
         if ($mes_atual < 3) {
             return 1;
         } elseif ($mes_atual < 5) {
@@ -76,6 +115,23 @@ class CalculationDate {
         } else {
             return 6;
         }
+    }
+
+    public static function getAnoAtual() {
+        $date = self::getDate();
+        return $date->year;
+    }
+
+    public static function getMesAtual() {
+        $date = self::getDate();
+        return $date->month;
+    }
+
+    public static function getDate() {
+        $date = Carbon::now();
+        //$date=Carbon::createFromFormat('Y-m-d', '2018-01-01'); //teste
+        $date->month = $date->month - 1; //cálculo de data em cima do mês anterior
+        return $date;
     }
 
     /**
@@ -128,7 +184,7 @@ class CalculationDate {
             } elseif ($request['data_bimestre'] == 4) {
                 $mes = 7;
             } elseif ($request['data_bimestre'] == 5) {
-              $mes = 9; //erro se colocar 09; não sei porque
+                $mes = 9; //erro se colocar 09; não sei porque
             } elseif ($request['data_bimestre'] == 6) {
                 $mes = 11;
             }
@@ -136,9 +192,28 @@ class CalculationDate {
         $data_inicio = Carbon::create($ano, $mes, $dia, 0, 0, 0);
         return $data_inicio;
     }
+    
+    /**
+     * Calcula uma data final a partir de uma de ìnicio, de acordo com a periodicidade
+     * do Indicador;
+     * @param Carbon $data_inicio
+     * @param App\Indicator $indicator
+     * @return Carbon data final
+     */
+     public static function getDataFinal($data_inicio, $indicator) {
+        //indicators_type: 1=Mensal, 2=Semestral, 3=Anual, 4=Trimestral, 5=Bimestral
+        //chaves são indicators_periodicidade e valores do array é o número a ser somado no mes da data_inicio;
+        $periodos = [1 => 0, 2 => 5, 3 => 11, 4 => 2, 5 => 1];
+        if (isset($periodos[$indicator->periodicidade])):
+            $data_final = clone $data_inicio;
+            $data_final->month += $periodos[$indicator->periodicidade];
+            $data_final->endOfMonth();
+            return $data_final;
+        endif;
+    }
 
     public static function changeDataInicioToPeriodo($dataInicio, $periodicidade) {
-      
+
         $meses = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto',
             'Setembro', 'Outubro', 'Novembro', 'Dezembro'
         ];
@@ -190,4 +265,62 @@ class CalculationDate {
         endif;
     }
 
+    /*
+     * métodos auxiliares de getPeriodoFromTodosPeriodos()
+     */
+
+    private static function auxMeses($periodo_tipo, $periodo_ano) {
+        $dia = 1;
+        $mes = $periodo_tipo + 1;
+        $ano = $periodo_ano;
+
+        $obj = new \stdClass();
+        $obj->inicio = Carbon::create($ano, $mes, $dia, 0, 0, 0);
+        $obj->final = Carbon::create($ano, $mes, $dia, 0, 0, 0);
+        $obj->final->endOfMonth();
+        return $obj;
+    }
+
+    private static function auxBimestres($periodo_tipo, $periodo_ano) {
+        $bimestres = [12 => 1, 13 => 3, 14 => 5, 15 => 7, 16 => 9, 17 => 11];
+        $dia = 1;
+        $mes = $bimestres[$periodo_tipo];
+        $ano = $periodo_ano;
+        $obj = new \stdClass();
+        $obj->inicio = Carbon::create($ano, $mes, $dia, 0, 0, 0);
+        $obj->final = Carbon::create($ano, $mes, $dia, 0, 0, 0);
+        $obj->final->month++;
+        $obj->final->endOfMonth();
+        return $obj;
+    }
+
+    private static function auxTrimestres($periodo_tipo, $periodo_ano) {
+        $trimestres = [18 => 1, 19 => 4, 20 => 7, 21 => 10];
+        $dia = 1;
+        $mes = $trimestres[$periodo_tipo];
+        $ano = $periodo_ano;
+        $obj = new \stdClass();
+        $obj->inicio = Carbon::create($ano, $mes, $dia, 0, 0, 0);
+        $obj->final = Carbon::create($ano, $mes, $dia, 0, 0, 0);
+        $obj->final->month += 2;
+        $obj->final->endOfMonth();
+        return $obj;
+    }
+
+    private static function auxSemestres($periodo_tipo, $periodo_ano) {
+        $semestres = [22 => 1, 23 => 7];
+        $dia = 1;
+        $mes = $semestres[$periodo_tipo];
+        $ano = $periodo_ano;
+        $obj = new \stdClass();
+        $obj->inicio = Carbon::create($ano, $mes, $dia, 0, 0, 0);
+        $obj->final = Carbon::create($ano, $mes, $dia, 0, 0, 0);
+        $obj->final->month += 5;
+        $obj->final->endOfMonth();
+        return $obj;
+    }
+
+    /*
+     * Fim métodos auxiliares de getPeriodoFromTodosPeriodos()
+     */
 }

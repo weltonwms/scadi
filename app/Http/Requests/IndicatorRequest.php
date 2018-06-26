@@ -34,6 +34,7 @@ class IndicatorRequest extends FormRequest {
             'sigla' => "required",
             'description' => "required",
             'name' => "required",
+            'peso' => 'required|numeric|between:0,1',
             'numerador_name' => "required",
             'numerador_sigla' => "required",
             'denominador_name' => $d,
@@ -53,16 +54,19 @@ class IndicatorRequest extends FormRequest {
             'numerador_sigla.required' => 'O campo Sigla é obrigatório',
             'denominador_name.required' => 'O campo Nome é obrigatório',
             'denominador_sigla.required' => 'O campo Sigla é obrigatório',
+            'peso.numeric'=>"O campo peso deve conter números. Utilize '.' para casas decimais"
         ];
     }
 
     private function tratarDados() {
         if ($this->numerador_habilitado) {
             $this->merge(['numerador_valor_padrao' => null]);
+            $this->merge(['numerador_obs_padrao' => null]);
         }
 
         if ($this->denominador_habilitado) {
             $this->merge(['denominador_valor_padrao' => null]);
+            $this->merge(['denominador_obs_padrao' => null]);
         }
 
         if ($this->tipo != 1) {
@@ -74,6 +78,7 @@ class IndicatorRequest extends FormRequest {
                         'denominador_name' => null,
                         'denominador_sigla' => null,
                         'denominador_description' => null,
+                        'denominador_obs_padrao' => null,
                         'denominador_valor_padrao' => 1,
                         'numerador_habilitado' => 1,
                     ]

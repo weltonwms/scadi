@@ -47,7 +47,7 @@ $periodos = ['' => '--Selecione--', 1 => 'Mensal',  5=>'Bimestral', 4=>'Trimestr
             <th>Índice</th>
             <th>Grupo(s)</th>
             @if(auth()->user()->isAdm)
-            <th>Ações</th>
+            <th width='20%'>Ações</th>
             @endif
         </tr>
     </thead>
@@ -63,7 +63,8 @@ $periodos = ['' => '--Selecione--', 1 => 'Mensal',  5=>'Bimestral', 4=>'Trimestr
             <td>{{$indicator->index->sigla}}</td>
             <td>{{$indicator->getGroupsList()}}</td>
             @if(auth()->user()->isAdm)
-            <td class="col-md-2">
+            <td>
+                <a class='btn btn-default' href="{{url("indicators/$indicator->id/clonar")}}">Clonar</a>
                 <a class='btn btn-default' href="{{url("indicators/$indicator->id/edit")}}">Editar</a>
                 <a class='btn btn-danger confirm' href="{{url("indicators/$indicator->id")}}  " data-info="{{$indicator->sigla}}">Excluir</a>
 

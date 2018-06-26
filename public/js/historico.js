@@ -15,6 +15,16 @@ $(document).ready(function () {
 //            $('#modal_lancar_pendencias').modal('show');
         }
     });
+    
+    $("#btn-filter-buscar").click(function (event) {
+        var tipo= parseInt($('select[name=periodo_tipo]').val());
+        var ano= parseInt($('select[name=periodo_ano]').val());
+        if(tipo>=0 && !ano){
+            bootbox.alert({message:'Necessário Selecionar Ano para o Período!',title:"Alerta",size:'small'});
+            event.preventDefault();
+        }
+        
+     });
 
 
 

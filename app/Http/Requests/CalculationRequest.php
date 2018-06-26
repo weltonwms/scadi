@@ -30,7 +30,9 @@ class CalculationRequest extends FormRequest {
     
      public function messages() {
         return [
-            'valor_numerador.required' => 'O campo valor é obrigatório'
+            'valor_numerador.required' => 'O campo valor é obrigatório',
+            'valor_numerador.numeric'=>"O campo valor deve conter números. Utilize '.' para casas decimais",
+            'valor_denominador.numeric'=>"O campo valor deve conter números. Utilize '.' para casas decimais"
           
         ];
     }

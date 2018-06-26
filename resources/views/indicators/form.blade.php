@@ -1,20 +1,39 @@
 <?php
-$periodos = ['' => '--Selecione--', 1 => 'Mensal',  5=>'Bimestral', 4=>'Trimestral',2 => 'Semestral', 3 => 'Anual'];
-$tipos = ['' => '--Selecione--', 1 => 'Relação',  2 => 'Valor Único', 3 => 'Valor Binário'];
+$periodos = ['' => '--Selecione--', 1 => 'Mensal', 5 => 'Bimestral', 4 => 'Trimestral', 2 => 'Semestral', 3 => 'Anual'];
+$tipos = ['' => '--Selecione--', 1 => 'Relação', 2 => 'Valor Único', 3 => 'Valor Binário'];
+$valor_peso=isset($indicator)?$indicator->peso:1;
 ?>
 <div class='row'>
     <div class='col-md-6'>
         {!! Form::listCollective(['index_id'=>'Índice *'],$indices,null,['class'=>'meu_chosen']) !!}
-        {!! Form::bsText(['sigla'=>"Sigla *"]) !!}
+        <div class='row'>
+            <div class='col-md-6'>
+                {!! Form::bsText(['sigla'=>"Sigla *"]) !!}
+            </div>
+            <div class='col-md-6'>
+                {!! Form::bsText(['subtitulo'=>"Subtítulo"]) !!}
+            </div>
+        </div>
+
+
         {!! Form::bsText(['name'=>"Nome *"]) !!}
         {!! Form::listCollective(['periodicidade'=>"Periodicidade *"],$periodos,null,['class'=>'meu_chosen']) !!}
-        {!! Form::listCollective(['tipo'=>"Tipo *"],$tipos,null,['class'=>'meu_chosen']) !!}
+        <div class='row'>
+            <div class="col-md-6">
+                {!! Form::listCollective(['tipo'=>"Tipo *"],$tipos,null,['class'=>'meu_chosen']) !!}
+            </div>
+            <div class="col-md-6">
+                {!! Form::bsText(['peso'=>"Peso *"],$valor_peso) !!}
+            </div>
+            
+        </div>
+        
     </div>
 
     <div class='col-md-6'>
         {!! Form::bsTextArea(['description'=>"Descrição *"],null,['rows'=>'8']) !!}
 
-
+        {!! Form::listCollective(['parent_id'=>"Indicador Pai"],$indicators,null,['class'=>'meu_chosen']) !!}
         {!! Form::listCollective(['groups_list[]'=>"Grupos Responsáveis"],$groups,null,['multiple'=>'multiple','class'=>'meu_chosen', 'data-placeholder'=>"--Selecione--"]) !!}
 
     </div>
@@ -31,12 +50,19 @@ $tipos = ['' => '--Selecione--', 1 => 'Relação',  2 => 'Valor Único', 3 => 'V
 
                 {!! Form::bsText(['numerador_description'=>"Descrição"]) !!}
                 <div class="hab-num">
-                     <b>Habilitado? </b>  Sim {!! Form::radio('numerador_habilitado',1,true) !!} Não {!! Form::radio('numerador_habilitado',0) !!}
+                    <b>Habilitado? </b>  Sim {!! Form::radio('numerador_habilitado',1,true) !!} Não {!! Form::radio('numerador_habilitado',0) !!}
                 </div>
-               
+
                 <div class='xt1'>
                     <hr>
-                    {!! Form::bsText(['numerador_valor_padrao'=>"Valor Padrão *"]) !!}
+                    <div class='col-md-6'>
+                        {!! Form::bsText(['numerador_valor_padrao'=>"Valor Padrão *"]) !!}
+                    </div>
+                    <div class='col-md-6'>
+                        {!! Form::bsText(['numerador_obs_padrao'=>"Obs Padrão "]) !!}
+                    </div>
+
+
                 </div>
             </div>
         </div>
@@ -50,13 +76,20 @@ $tipos = ['' => '--Selecione--', 1 => 'Relação',  2 => 'Valor Único', 3 => 'V
                 {!! Form::bsText(['denominador_name'=>"Nome *"]) !!}
 
                 {!! Form::bsText(['denominador_description'=>"Descrição"]) !!}
-                 <div class="hab-den">
-                <b>Habilitado? </b>  Sim {!! Form::radio('denominador_habilitado',1,true) !!} Não {!! Form::radio('denominador_habilitado',0) !!}
-                 </div>
-                
-                <div class='xt2'>
+                <div class="hab-den">
+                    <b>Habilitado? </b>  Sim {!! Form::radio('denominador_habilitado',1,true) !!} Não {!! Form::radio('denominador_habilitado',0) !!}
+                </div>
+
+                <div class='xt2 '>
                     <hr>
-                    {!! Form::bsText(['denominador_valor_padrao'=>"Valor Padrão *"]) !!}
+                    <div class='col-md-6'>
+                        {!! Form::bsText(['denominador_valor_padrao'=>"Valor Padrão *"]) !!}
+                    </div>
+                    <div class='col-md-6'>
+                        {!! Form::bsText(['denominador_obs_padrao'=>"Obs Padrão "]) !!}
+                    </div>
+
+
                 </div>
             </div>
         </div>

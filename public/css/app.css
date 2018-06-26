@@ -85,3 +85,12 @@ table.dataTable thead .sorting::after, table.dataTable thead .sorting_asc::after
 .marginl4{
     margin-left: 4px;
 }
+
+@media screen and (min-width:768px){
+    .action-filter-historic{
+       padding-top: 10px;     
+    }
+}
+
+    
+

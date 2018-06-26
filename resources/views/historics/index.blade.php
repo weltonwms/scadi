@@ -1,37 +1,43 @@
 @extends('layouts.app_interno')
 @section('content_interno')
 
-<h4>Apurações</h4>
+<h4>Histórico: Apurações</h4>
 <hr>
 <?php
-$periodos = ['' => '--Selecione--', 1 => 'Mensal',  5=>'Bimestral', 4=>'Trimestral',2 => 'Semestral', 3 => 'Anual'];
+use App\Helpers\CalculationDate;
+$periodos = CalculationDate::getTodosPeriodos()->prepend('--Selecione--','');
+$periodos_anos= CalculationDate::getAnosUsados()->prepend('--Selecione--','');
+$attr1 = ['class' => 'form-control input-sm meu_chosen'];
+$attr2 = ['class' => 'form-control input-sm'];
 ?>
  <form class="form-inline">
 <div class="row ">
     <div class=" filters col-md-12">
          <div class="form-group">
             <label for="">Indicador: </label>
-            <?php $attr = ['class' => 'form-control input-sm', 'onchange' => 'this.form.submit()'] ?>
-            {!!Form::select('indicator', $indicators, null,$attr )!!}
+            {!!Form::select('indicator', $indicators, null,$attr1 )!!}
         </div>
+       
+        
+         <div class="form-group">
+            <label for="">Validado: </label>
+            {!!Form::select('validado', [''=>'--Selecione--',1=>'Sim',0=>'Não'], null,$attr2 )!!}
+        </div>
+        
         <div class="form-group">
-            <label for="">Periodicidade: </label>
-
-            {!!Form::select('periodicidade', $periodos, null,$attr )!!}
+            <label for="">Período: </label>
+            {!!Form::select('periodo_tipo',$periodos, null,$attr2 )!!}
+            {!!Form::select('periodo_ano',$periodos_anos, null,$attr2 )!!}
         </div>
        
         <div class="form-group">
              <label for="">Usuário: </label>
-            <div class="input-group">
-                <input class="form-control input-sm" name="name" placeholder="Nome" value="{{request('name')}}">
-                <span class="input-group-btn">
-                    <button class="btn btn-sm btn-default" type="submit">Buscar</button>
-                </span>
-            </div>
+             <input class="form-control input-sm" name="name" placeholder="Nome" value="{{request('name')}}">
         </div>
-         <div class="form-group">
-           
+        
+         <div class="form-group action-filter-historic">
             <a class="btn btn-default btn-limpar" href="{{route('historics.index')}}">Limpar</a>
+            <button id="btn-filter-buscar" class="btn btn-primary" type="submit">Buscar</button>
         </div>
     </div>
        
@@ -119,8 +125,9 @@ $periodos = ['' => '--Selecione--', 1 => 'Mensal',  5=>'Bimestral', 4=>'Trimestr
 <?php
 $append = [
     'indicator' => request('indicator'),
-    'periodicidade' => request('periodicidade'),
-    'user' => request('user'),
+    'validado'=> request('validado'),
+    'periodo_tipo'=>request('periodo_tipo'),
+    'periodo_ano'=>request('periodo_ano'),
     'name' => request('name'),
     'limitPage'=>request('limitPage')
         ]

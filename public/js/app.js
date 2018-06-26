@@ -57,7 +57,8 @@ $.ajaxSetup({
 
     $('.meu_chosen').chosen({
         allow_single_deselect: true,
-        no_results_text: "Oops, Não encontrado!"
+        no_results_text: "Oops, Não encontrado!",
+        search_contains: true
 
     });
     

@@ -68,7 +68,7 @@ $periodos = ['' => '--Selecione--', 1 => 'Mensal', 2 => 'Semestral', 3 => 'Anual
                             @if(auth()->user()->isAdm)
                             <th></th>
                             @endif
-                            
+
                         </tr>
 
                     </thead>
@@ -94,82 +94,106 @@ $periodos = ['' => '--Selecione--', 1 => 'Mensal', 2 => 'Semestral', 3 => 'Anual
 @endsection
 
 @push('scripts')
-
+<script src="{{asset("/js/bootbox.min.js")}}"></script>
 <script>
-    table_historico = $('#tabela-modal-historico').DataTable({
-        "iDisplayLength": 10,
-        "ordering": false,
-        "lengthMenu": [5, 10, 25, 50],
-        "dom": "<'row'<'col-sm-6'f><'col-sm-6'l>>" +
-                "<'row'<'col-sm-12'tr>>" +
-                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+table_historico = $('#tabela-modal-historico').DataTable({
+    "iDisplayLength": 10,
+    "ordering": false,
+    "lengthMenu": [5, 10, 25, 50],
+    "dom": "<'row'<'col-sm-6'f><'col-sm-6'l>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
 
-        "columns": getColumnsTableHistorico(),
-        "autoWidth": false,
-        processing: true,
-        oLanguage: {
-            'sProcessing': "<div id='loader'>Carregando...</div>",
-            "sSearch": "<span class='glyphicon glyphicon-search'></span> Pesquisar: ",
-            "sLengthMenu": "Mostrar _MENU_ registros por página",
-            "sZeroRecords": "Nenhum registro encontrado",
-            "sInfo": "Mostrando _START_ / _END_ de _TOTAL_ registro(s)",
-            "sInfoEmpty": "<span class='text-danger'>Mostrando 0 / 0 de 0 registros</span>",
-            "sInfoFiltered": "<span class='text-danger'>(filtrado de _MAX_ registros)</span>",
-            "oPaginate": {
-                "sFirst": "Início",
-                "sPrevious": "Anterior",
-                "sNext": "Próximo",
-                "sLast": "Último"
+    "columns": getColumnsTableHistorico(),
+    "autoWidth": false,
+    processing: true,
+    oLanguage: {
+        'sProcessing': "<div id='loader'>Carregando...</div>",
+        "sSearch": "<span class='glyphicon glyphicon-search'></span> Pesquisar: ",
+        "sLengthMenu": "Mostrar _MENU_ registros por página",
+        "sZeroRecords": "Nenhum registro encontrado",
+        "sInfo": "Mostrando _START_ / _END_ de _TOTAL_ registro(s)",
+        "sInfoEmpty": "<span class='text-danger'>Mostrando 0 / 0 de 0 registros</span>",
+        "sInfoFiltered": "<span class='text-danger'>(filtrado de _MAX_ registros)</span>",
+        "oPaginate": {
+            "sFirst": "Início",
+            "sPrevious": "Anterior",
+            "sNext": "Próximo",
+            "sLast": "Último"
+        }
+    }
+
+});//fim table_ajax
+
+$(".btn-history").click(function () {
+    var id = this.dataset.id;
+    table_historico.ajax.url("calculations/" + id + "/show").load();
+    $('#modal-historico').modal('show');
+
+});
+
+function excluirCalculation(href) {
+    
+    $.ajax({
+        url: href,
+        method: 'delete',
+        success: function (data) {
+            console.log(data);
+            table_historico.ajax.reload(null, false);
+        }
+    });
+}
+
+function ConfirmExcluirCalculation(event) {
+    event.preventDefault();
+    var alvo = event.target; //ṕode ser o span ou o link
+    var href = $(alvo).closest('a').attr('href'); //procura pelo href no link
+    bootbox.confirm({
+        message: "Deseja realmente excluir este valor?",
+        callback: function (result) {
+            if (result) {
+                excluirCalculation(href);
+            }
+        },
+        title: "Confirmação",
+
+        buttons: {
+            confirm: {
+                label: 'Sim',
+                className: 'btn-success'
+            },
+            cancel: {
+                label: 'Cancelar',
+                className: 'btn-default pull-right marginl4'
             }
         }
-
-    });//fim table_ajax
-
-    $(".btn-history").click(function () {
-        var id = this.dataset.id;
-        table_historico.ajax.url("calculations/" + id + "/show").load();
-        $('#modal-historico').modal('show');
-
     });
-    
-    function excluirCalculation(event){
-        event.preventDefault();
-        var alvo= event.target; //ṕode ser o span ou o link
-        var href= $(alvo).closest('a').attr('href'); //procura pelo href no link
-       
-        $.ajax({
-            url: href,
-            method:'delete',
-            success: function(data){
-                console.log(data);
-                table_historico.ajax.reload(null,false);
+}
+
+
+function getColumnsTableHistorico() {
+    var columns = [
+        {"data": "valor"},
+        {"data": "data_inicio"},
+        {"data": "criado_por"},
+        {"data": "validado_por"},
+        {"data": "atual"}
+    ];
+
+<?php if (auth()->user()->isAdm): ?>
+        columns.push({data: null, render: function (data, type, row) {
+
+                var url = 'calculations/' + data.id;
+                var link = '<a href="' + url + '" onclick="ConfirmExcluirCalculation(event)"><span class="text-danger glyphicon glyphicon-trash"></span></a>';
+                return link;
             }
         });
-    }
-    
-    function getColumnsTableHistorico(){
-         var columns=[
-            {"data": "valor"},
-            {"data": "data_inicio"},
-            {"data": "criado_por"},
-            {"data": "validado_por"},
-            {"data": "atual"}
-         ];
-         
-       <?php if(auth()->user()->isAdm):?>
-        columns.push({ data: null, render: function ( data, type, row ) {
-               
-                var url= 'calculations/'+data.id;    
-                var link= '<a href="'+url+'" onclick="excluirCalculation(event)"><span class="text-danger glyphicon glyphicon-trash"></span></a>';
-                return link;
-                } 
-            });
-       <?php endif?>    
-       
-        return columns;   
-            
-       
-    }
+<?php endif ?>
+
+    return columns;
+
+
+}
 
 
 </script>

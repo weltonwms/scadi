@@ -31,6 +31,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('calculations', 'CalculationController@index')->name('calculations.index');
     Route::get('calculations/{indicator}/create', 'CalculationController@create')->name('calculations.create');
     Route::get('calculations/{indicator}/show', 'CalculationController@showHistory')->name('calculations.show-history');
+    Route::delete('calculations/{calculation}', 'CalculationController@destroy')->name('calculations.destroy')->middleware('adm');
     
     Route::post('calculations/{indicator}', 'CalculationController@store')->name('calculations.store');
     Route::get('historics','HistoricController@index')->name('historics.index');

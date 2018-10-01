@@ -12,7 +12,7 @@ class CalculationController extends Controller {
 
     public function __construct() {
 
-        $this->middleware('calculation')->except(['index','atualizarTodosCalculations']);
+        $this->middleware('calculation')->except(['index','atualizarTodosCalculations','destroy']);
     }
 
     public function index() {
@@ -24,7 +24,8 @@ class CalculationController extends Controller {
             'indices' => Index::pluck('sigla', 'id')->prepend('--Selecione--', ''),
             'indicatorsList' => Indicator::getPermitidos()->pluck('sigla', 'id')->prepend('--Selecione--', '')
         ];
-
+//        $c= Calculation::find(770);
+//        dd($c->getAttributes());
 
         return view('calculations.index', $dados);
     }
@@ -59,9 +60,19 @@ class CalculationController extends Controller {
             $obj->validado_por = $calculation->getValidadoPor();
             $obj->data_inicio= $calculation->getPeriodoReferencia();
             $obj->atual= $calculation->getAtual();
+            $obj->id= $calculation->id;
             $dados['data'][] = $obj;
         endforeach;
         return $dados;
+    }
+    
+    public function destroy(Calculation $calculation){
+        $retorno=null;
+        if($calculation->delete()):
+            $retorno=\App\LogCalculation::salvar($calculation);
+        endif;
+       return response()->json(['retorno'=>$retorno]); 
+       
     }
     
    private function trataDados($request, $indicator) {

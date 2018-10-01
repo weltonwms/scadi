@@ -65,6 +65,10 @@ $periodos = ['' => '--Selecione--', 1 => 'Mensal', 2 => 'Semestral', 3 => 'Anual
                             <th>Criado por</th>
                             <th>Validado por</th>
                             <th>Atual</th>
+                            @if(auth()->user()->isAdm)
+                            <th></th>
+                            @endif
+                            
                         </tr>
 
                     </thead>
@@ -100,13 +104,7 @@ $periodos = ['' => '--Selecione--', 1 => 'Mensal', 2 => 'Semestral', 3 => 'Anual
                 "<'row'<'col-sm-12'tr>>" +
                 "<'row'<'col-sm-5'i><'col-sm-7'p>>",
 
-        "columns": [
-            {"data": "valor"},
-            {"data": "data_inicio"},
-            {"data": "criado_por"},
-            {"data": "validado_por"},
-            {"data": "atual"}
-        ],
+        "columns": getColumnsTableHistorico(),
         "autoWidth": false,
         processing: true,
         oLanguage: {
@@ -131,9 +129,47 @@ $periodos = ['' => '--Selecione--', 1 => 'Mensal', 2 => 'Semestral', 3 => 'Anual
         var id = this.dataset.id;
         table_historico.ajax.url("calculations/" + id + "/show").load();
         $('#modal-historico').modal('show');
-//        $('#container').css( 'display', 'block' );
-//        table_historico.columns.adjust().draw();
+
     });
+    
+    function excluirCalculation(event){
+        event.preventDefault();
+        var alvo= event.target; //ṕode ser o span ou o link
+        var href= $(alvo).closest('a').attr('href'); //procura pelo href no link
+       
+        $.ajax({
+            url: href,
+            method:'delete',
+            success: function(data){
+                console.log(data);
+                table_historico.ajax.reload(null,false);
+            }
+        });
+    }
+    
+    function getColumnsTableHistorico(){
+         var columns=[
+            {"data": "valor"},
+            {"data": "data_inicio"},
+            {"data": "criado_por"},
+            {"data": "validado_por"},
+            {"data": "atual"}
+         ];
+         
+       <?php if(auth()->user()->isAdm):?>
+        columns.push({ data: null, render: function ( data, type, row ) {
+               
+                var url= 'calculations/'+data.id;    
+                var link= '<a href="'+url+'" onclick="excluirCalculation(event)"><span class="text-danger glyphicon glyphicon-trash"></span></a>';
+                return link;
+                } 
+            });
+       <?php endif?>    
+       
+        return columns;   
+            
+       
+    }
 
 
 </script>

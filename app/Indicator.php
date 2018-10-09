@@ -33,7 +33,10 @@ class Indicator extends Model {
     }
 
     public function getLastCalculation() {
-        return $this->calculations->sortByDesc('created_at')->first();
+        //last calculation considerando somente os que tem a mesma periodicidade que o indicator atual.
+        return $this->calculations->filter(function($calculation){
+            return $calculation->periodicidade==$this->periodicidade;
+        })->sortByDesc('created_at')->first();
     }
 
     public function indicatorParent() {
@@ -78,7 +81,13 @@ class Indicator extends Model {
     }
 
 
-
+    public function getCalculationsForHistory(){
+     
+       $calculations= $this->calculations->filter(function($calculation){
+           return $calculation->periodicidade==$this->periodicidade;
+       });
+       return $calculations->sortByDesc('created_at');
+    }    
 
 
     public function getDateLastCalculation() {

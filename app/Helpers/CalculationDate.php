@@ -291,6 +291,7 @@ class CalculationDate {
         $obj->final = Carbon::create($ano, $mes, $dia, 0, 0, 0);
         $obj->final->month++;
         $obj->final->endOfMonth();
+        //dd($obj);
         return $obj;
     }
 

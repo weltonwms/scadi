@@ -53,7 +53,7 @@ class CalculationController extends Controller {
     public function showHistory(Indicator $indicator) {
         $dados = [];
         $dados['data']=[];
-        foreach ($indicator->calculations->sortByDesc('created_at') as $calculation):
+        foreach ($indicator->getCalculationsForHistory() as $calculation):
             $obj = new \stdClass();
             $obj->valor = $calculation->getValor();
             $obj->criado_por = $calculation->getCriadoPor();
@@ -80,6 +80,7 @@ class CalculationController extends Controller {
         $dados['data_inicio'] = \App\Helpers\CalculationDate::getDataInicio($dados, $indicator);
         $dados['data_final'] = \App\Helpers\CalculationDate::getDataFinal($dados['data_inicio'],$indicator);
         $dados['indicator_id'] = $indicator->id;
+        $dados['periodicidade']= $indicator->periodicidade;
         $dados['user_id'] = auth()->user()->id;
         $dados['atual']=1; //indicação de que o registro é o último; analisar essa responsabilidade para o model
 

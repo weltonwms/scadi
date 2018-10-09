@@ -12,7 +12,7 @@ class IndicatorController extends Controller {
     }
 
     public function index() {
-
+       
         $dados = [
             'indices' => \App\Index::pluck('sigla', 'id')->prepend('-Selecione-', ''),
             'indicators' => Indicator::getAllByFiltro()
@@ -71,11 +71,12 @@ class IndicatorController extends Controller {
     }
 
     public function update(IndicatorRequest $request, Indicator $indicator) {
-
+       // \App\Calculation::AtualizarCalculationsPorMudancaIndicator($request, $indicator);
         $indicator->update($request->all());
         $indicator->groups()->sync($request->groups_list);
         $indicator->setLevel();
         $retorno = $indicator->save(); //retorna true se salvar
+        
         $indicator->saveLevelChildren();
         if ($retorno):
             \Session::flash('mensagem', ['type' => 'success', 'conteudo' => trans('messages.actionUpdate')]);

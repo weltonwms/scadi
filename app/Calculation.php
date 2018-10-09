@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
 class Calculation extends Model {
 
     protected $fillable = ['indicator_id', 'data_inicio', 'user_id', 'valor_numerador', 'valor_denominador',
-        'obs_numerador', 'obs_denominador', 'atual','data_final'];
+        'obs_numerador', 'obs_denominador', 'atual','data_final','periodicidade'];
     protected $dates = array('data_inicio','data_final');
 
     public function indicator() {
@@ -33,8 +33,14 @@ class Calculation extends Model {
             return collect(); //caso usuário não tenha permissão de nada
         endif;
         $request = request();
-        $query->where('atual', 1);
+      
+        //necessario fazer um join para pegar só os atuais correspondentes na periodicidade atual do indicator
+        $query->join('indicators', 'indicators.id', '=', 'calculations.indicator_id')
+              ->select('calculations.*')
+              ->whereColumn('indicators.periodicidade','=','calculations.periodicidade'); 
+         $query->where('atual', 1);
 
+       
         if ($request->indicator):
             $query->where('indicator_id', $request->indicator);
         endif;
@@ -52,6 +58,7 @@ class Calculation extends Model {
 
         endif;
 
+        
         if (is_numeric($request->validado)):
             if ($request->validado==0):
                 $query->where(function($query){
@@ -100,8 +107,10 @@ class Calculation extends Model {
     public static function zerarCalculationsRepetidos(array $request) {
         $indicator_id = $request['indicator_id'];
         $carbonDataInicio = $request['data_inicio'];
+        $periodicidade = $request['periodicidade'];
         return self::where('indicator_id', $indicator_id)
                         ->where('data_inicio', $carbonDataInicio->format('Y-m-d'))
+                        ->where('periodicidade', $periodicidade)
                         ->update(['atual' => 0]);
     }
 
@@ -188,5 +197,7 @@ class Calculation extends Model {
             return $nomes[$this->atual];
         endif;
     }
+    
+   
 
 }

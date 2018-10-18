@@ -31,7 +31,7 @@ class CalculationController extends Controller {
     }
 
     public function create(Indicator $indicator) {
-        // dd($indicator->getDateLastCalculation());
+        // dd($indicator->getLastPeriodCalculationValid());
 
         $dados = [
             'indicator' => $indicator

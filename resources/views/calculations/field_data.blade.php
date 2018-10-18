@@ -7,8 +7,10 @@ $ano_atual = CalculationDate::getAnoAtual();
 $semestre_atual = CalculationDate::getSemestreAtual();
 $trimestre_atual = CalculationDate::getTrimestreAtual();
 $bimestre_atual = CalculationDate::getBimestreAtual();
-$double_input = $indicator->periodicidade ==3?'': 'input-group double-input';
+$double_input = $indicator->periodicidade == 3 ? '' : 'input-group double-input';
 ?>
+
+<p ><b>Último Período Validado</b>: {{$indicator->getLastPeriodCalculationValidFormatado()}}</p>
 <div class="form-group">
     <label for="">Período de Referência da Apuração</label>
     <div class="{{$double_input}}">

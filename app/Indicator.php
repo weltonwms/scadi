@@ -55,6 +55,19 @@ class Indicator extends Model {
         endif;
         $this->level = $level;
     }
+    
+    public function getLastPeriodCalculationValid(){
+        //last calculation considerando somente os que tem a mesma periodicidade que o indicator atual.
+        return $this->calculations->filter(function($calculation){
+            return $calculation->periodicidade==$this->periodicidade && $calculation->validado==1;
+        })->sortByDesc('data_inicio')->first();
+    }
+    
+    public function getLastPeriodCalculationValidFormatado(){
+        if($this->getLastPeriodCalculationValid()):
+            return $this->getLastPeriodCalculationValid()->getPeriodoReferencia();
+        endif;
+    }
 
     
     

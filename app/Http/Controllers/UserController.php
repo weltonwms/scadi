@@ -138,5 +138,23 @@ class UserController extends Controller {
         $militares = \App\Helpers\Ldap::getMilitares();
         return $militares;
     }
+    
+    public function lixeira(){
+        $users= User::onlyTrashed()->get();
+        $dados=[
+          "users"=>$users  
+        ];
+        return view("users.lixeira", $dados);
+    }
+    
+    public function reativar($user_id){
+        $user= User::onlyTrashed()->find($user_id);
+       
+        if($user):
+            $user->restore();
+            \Session::flash('mensagem', ['type' => 'success', 'conteudo' => 'Usuário Reativado']);
+        endif;
+        return redirect()->route('users.lixeira');
+    }
 
 }

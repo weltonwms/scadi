@@ -120,10 +120,14 @@ class User extends Authenticatable {
             return false;
         endif;
         //forçando delete físico caso não haja histórico para este usuário
+        /*
+         * Ação não é mais necessária
         $values = \App\Calculation::where('user_id', $this->id)->get();
         if ($values->isEmpty()):
             return $this->forceDelete();
         endif;
+         * 
+         */
         //delete lógico (softDelete)
         return $this->delete();
     }

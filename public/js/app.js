@@ -31,6 +31,18 @@ $.ajaxSetup({
         classIconConfirmButton: "glyphicon glyphicon-ok",
 
     });
+    
+    $(".confirm_reativar").confirm({
+        text: "Deseja realmente Reativar este Usuário?",
+        title: "  Reativação de Usuário",
+        confirmButton: " Confirmar",
+        cancelButton: " Cancelar",
+        post: true,
+        method: 'put',
+        classConfirmButton: "btn btn-primary",
+        classIconConfirmButton: "glyphicon glyphicon-ok",
+
+    });
 
 
     datepickerOptions = {

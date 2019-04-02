@@ -5,39 +5,42 @@
 <hr>
 <div class="row">
     <a class="btn btn-primary pull-right" href="{{route('users.create')}}">Novo Usuário</a>
+     @if(auth()->user()->isAdm)
+    <a style="margin-right: 6px" class="btn btn-default  pull-right" href="{{route('users.lixeira')}}">Lixeira</a>
+     @endif
 </div>
 
 <div class="row filters">
     <form class="form-inline">
         <?php $attr = ['class' => 'form-control input-sm', 'onchange' => 'this.form.submit()'] ?>
-         <?php $perfis = [''=>'--Selecione--',1=>"Administrador", 2=>"Gestor",3=>"Apurador"];?>
+        <?php $perfis = ['' => '--Selecione--', 1 => "Administrador", 2 => "Gestor", 3 => "Apurador"]; ?>
         <div class="form-group">
             <label for="">Om</label>
-            
+
             {!!Form::select('om', $oms, null,$attr )!!}
         </div>
-         <div class="form-group">
+        <div class="form-group">
             <label for="">Posto/Grad</label>
-            
+
             {!!Form::select('posto', $postos, null,$attr )!!}
         </div>
         @if(auth()->user()->isAdm)
-         <div class="form-group">
+        <div class="form-group">
             <label for="">Grupo</label>
-            
+
             {!!Form::select('group', $groups, null,$attr )!!}
         </div>
         <div class="form-group">
             <label for="">Perfil</label>
-            
+
             {!!Form::select('perfil', $perfis, null,$attr )!!}
         </div>
         @endif
-         <div class="form-group">
-           
+        <div class="form-group">
+
             <a class="btn btn-default btn-limpar" href="{{route('users.index')}}">Limpar</a>
         </div>
-        
+
 
     </form>
 </div>
@@ -49,8 +52,8 @@
             <th>ID</th>
             <th>Username</th>
             <th>Nome</th>
-             <th width="15%">Nome de Guerra</th>
-              <th>Posto</th>
+            <th width="15%">Nome de Guerra</th>
+            <th>Posto</th>
             <th>OM</th>
             <th>Perfil</th>
             <th>Grupo</th>
@@ -67,9 +70,9 @@
             <td>{{$user->guerra}}</td>
             <td>{{$user->posto}}</td>
             <td>{{$user->om}}</td>
-             <td>{{$user->nome_perfil}}</td>
-             <td>{{$user->getGroupName()}}</td>
-            
+            <td>{{$user->nome_perfil}}</td>
+            <td>{{$user->getGroupName()}}</td>
+
             <td class="col-md-2">
                 <a class='btn btn-default' href="{{url("users/$user->id/edit")}}">Editar</a>
                 <a class='btn btn-danger confirm' href="{{url("users/$user->id")}}  " data-info="{{$user->name}}">Excluir</a>

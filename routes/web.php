@@ -37,7 +37,8 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('historics','HistoricController@index')->name('historics.index');
     Route::put('historics/validar','HistoricController@validar')->name('historics.validar');
   
-
+    Route::get('/users/lixeira', 'UserController@lixeira')->name('users.lixeira');
+    Route::put("users/{user_id}/reativar", 'UserController@reativar')->name('users.reativar');
     Route::get('/users-ldap', 'UserController@usersLdap');
     Route::get('/militares-json', 'UserController@getMilitaresJson');
     Route::resource('users', 'UserController');

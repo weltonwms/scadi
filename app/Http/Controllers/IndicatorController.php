@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Indicator;
 use App\Http\Requests\IndicatorRequest;
+use App\Helpers\IndicatorDatatable;
 
 class IndicatorController extends Controller {
 
@@ -12,13 +13,21 @@ class IndicatorController extends Controller {
     }
 
     public function index() {
-       
+
         $dados = [
             'indices' => \App\Index::pluck('sigla', 'id')->prepend('-Selecione-', ''),
-            'indicators' => Indicator::getAllByFiltro()
+            //'indicators' => Indicator::getAllByFiltro()
         ];
 
         return view("indicators.index", $dados);
+
+    }
+
+    public function indicatorTable() {
+        $request= request()->all();
+        $table = new IndicatorDatatable();
+        $resposta = $table->getTable($request);
+        return $resposta;
     }
 
     public function create() {
@@ -44,8 +53,7 @@ class IndicatorController extends Controller {
 
     public function show(Indicator $indicator) {
         echo "show {$indicator->id}";
-        
-      }
+    }
 
     public function clonar(Indicator $indicator) {
         $groups = $indicator->groups->pluck('id');
@@ -71,12 +79,12 @@ class IndicatorController extends Controller {
     }
 
     public function update(IndicatorRequest $request, Indicator $indicator) {
-       // \App\Calculation::AtualizarCalculationsPorMudancaIndicator($request, $indicator);
+        // \App\Calculation::AtualizarCalculationsPorMudancaIndicator($request, $indicator);
         $indicator->update($request->all());
         $indicator->groups()->sync($request->groups_list);
         $indicator->setLevel();
         $retorno = $indicator->save(); //retorna true se salvar
-        
+
         $indicator->saveLevelChildren();
         if ($retorno):
             \Session::flash('mensagem', ['type' => 'success', 'conteudo' => trans('messages.actionUpdate')]);
@@ -93,4 +101,3 @@ class IndicatorController extends Controller {
     }
 
 }
-

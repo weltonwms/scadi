@@ -1,49 +1,17 @@
 $(document).ready(function () {
     /**
- * **********************************************************************
- * instrução para as requisões ajax da jquery incluir o csrf-token laravel
- *************************************************************************
- */
-$.ajaxSetup({
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
-});
-    
-    $(".confirm").confirm({
-        text: "Deseja realmente excluir este Item?",
-        title: "  Exclusão de Item",
-        confirmButton: " Excluir",
-        cancelButton: " Cancelar",
-        post: true
-
-    });
-
-
-    $(".confirm_aceitar").confirm({
-        text: "Deseja realmente Aceitar este Item?",
-        title: "  Aceitação de Item",
-        confirmButton: " Confirmar",
-        cancelButton: " Cancelar",
-        post: true,
-        method: 'put',
-        classConfirmButton: "btn btn-primary",
-        classIconConfirmButton: "glyphicon glyphicon-ok",
-
+     * **********************************************************************
+     * instrução para as requisões ajax da jquery incluir o csrf-token laravel
+     *************************************************************************
+     */
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
     });
     
-    $(".confirm_reativar").confirm({
-        text: "Deseja realmente Reativar este Usuário?",
-        title: "  Reativação de Usuário",
-        confirmButton: " Confirmar",
-        cancelButton: " Cancelar",
-        post: true,
-        method: 'put',
-        classConfirmButton: "btn btn-primary",
-        classIconConfirmButton: "glyphicon glyphicon-ok",
 
-    });
-
+    //ativarConfirms();
 
     datepickerOptions = {
         format: "dd/mm/yyyy",
@@ -73,9 +41,9 @@ $.ajaxSetup({
         search_contains: true
 
     });
-    
-    $(".btn-limpar").click(function(){
-       $("#tabela").DataTable().search("").draw()
+
+    $(".btn-limpar").click(function () {
+        $("#tabela").DataTable().search("").draw()
     });
 
 
@@ -100,7 +68,7 @@ var SPMaskBehavior = function (val) {
  * no html primeiro para depois o datatable pega-los.
  */
 $(document).ready(function () {
-    $('.tabela').dataTable({
+    tabela_normal = $('.tabela').DataTable({
         "dom": "<'row'<'col-sm-6'f><'col-sm-6'l>>" +
                 "<'row'<'col-sm-12'tr>>" +
                 "<'row'<'col-sm-5'i><'col-sm-7'p>>",
@@ -131,11 +99,114 @@ $(document).ready(function () {
 
 
 
+
+
+    tabela_indicadores = $('#tabela_indicadores').DataTable({
+        dom: "<'row'<'col-sm-6'f><'col-sm-6'l>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        iDisplayLength: 10,
+        serverSide: true,
+        ajax: "ajax/indicatorTable",
+        columns: [
+            {data: "id", name: "id"},
+            {data: "sigla", name: "sigla"},
+            {data: "name", name: "name"},
+            {data: "tipo_nome", name: "tipo_nome"},
+            {data: "periodicidade_nome", name: "periodicidade_nome"},
+            {data: "index_sigla", name: "index_sigla"},
+            {data: "grupos_lista"},
+            {data: "acoes"}
+        ],
+        "order": [0, 'desc'],
+        drawCallback: draw,
+        "bStateSave": true,
+        "columnDefs": [{
+                "targets": [-1, -2],
+                "orderable": false
+            }],
+        processing: true,
+        oLanguage: {
+
+            'sProcessing': "<div id='loader'>Carregando...</div>",
+            "sSearch": "<span class='glyphicon glyphicon-search'></span> Pesquisar: ",
+            "sLengthMenu": "Mostrar _MENU_ registros por página",
+            "sZeroRecords": "Nenhum registro encontrado",
+            "sInfo": "Mostrando _START_ / _END_ de _TOTAL_ registro(s)",
+            "sInfoEmpty": "<span class='text-danger'>Mostrando 0 / 0 de 0 registros</span>",
+            "sInfoFiltered": "<span class='text-danger'>(filtrado de _MAX_ registros)</span>",
+            "oPaginate": {
+                "sFirst": "Início",
+                "sPrevious": "Anterior",
+                "sNext": "Próximo",
+                "sLast": "Último"
+            }
+        }
+
+    });
+
+
+
+//    $.ajax({
+//        method:'get',
+//        url:'teste1',
+//        dataType:'json',
+//        success:function(data){
+//            console.log('sucesso ajax');
+//            console.log(data);
+//        }
+//    });
+
+
+
+
+
+
+
 }); //fechamento do ready
 
 function draw() {
     //funções a chamar quando carrega table
+    ativarConfirms();
 }
+
+
+function ativarConfirms() {
+        $(".confirm").confirm({
+            text: "Deseja realmente excluir este Item?",
+            title: "  Exclusão de Item",
+            confirmButton: " Excluir",
+            cancelButton: " Cancelar",
+            post: true
+
+        });
+
+
+        $(".confirm_aceitar").confirm({
+            text: "Deseja realmente Aceitar este Item?",
+            title: "  Aceitação de Item",
+            confirmButton: " Confirmar",
+            cancelButton: " Cancelar",
+            post: true,
+            method: 'put',
+            classConfirmButton: "btn btn-primary",
+            classIconConfirmButton: "glyphicon glyphicon-ok",
+
+        });
+
+        $(".confirm_reativar").confirm({
+            text: "Deseja realmente Reativar este Usuário?",
+            title: "  Reativação de Usuário",
+            confirmButton: " Confirmar",
+            cancelButton: " Cancelar",
+            post: true,
+            method: 'put',
+            classConfirmButton: "btn btn-primary",
+            classIconConfirmButton: "glyphicon glyphicon-ok",
+
+        });
+
+    }
 
 // ---------------------------------------------------------- Generic Check All  
 

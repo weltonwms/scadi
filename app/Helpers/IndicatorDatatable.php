@@ -27,7 +27,7 @@ class IndicatorDatatable {
 
         if ($search):
             $this->query->where(function($query) use ($search) {
-                $query->where('indicators.id', 'like', "%$search%")
+                $query->where('indicators.id', '=', "$search")
                         ->orWhere('indicators.sigla', 'like', "%$search%")
                         ->orWhere('indicators.name', 'like', "%$search%")
                         ->orWhere('indicators_tipo.description', 'like', "%$search%")

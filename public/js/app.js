@@ -147,15 +147,6 @@ $(document).ready(function () {
 
 
 
-//    $.ajax({
-//        method:'get',
-//        url:'teste1',
-//        dataType:'json',
-//        success:function(data){
-//            console.log('sucesso ajax');
-//            console.log(data);
-//        }
-//    });
 
 
 
@@ -169,6 +160,8 @@ function draw() {
     //funções a chamar quando carrega table
     ativarConfirms();
 }
+
+
 
 
 function ativarConfirms() {

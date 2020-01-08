@@ -3,12 +3,10 @@
 
 <h4>Apurações</h4>
 <hr>
-<?php
-$periodos = ['' => '--Selecione--', 1 => 'Mensal', 2 => 'Semestral', 3 => 'Anual'];
-?>
+
 
 <br>
-<table class="tabela table table-striped" id="tabela">
+<table class="table table-striped" id="tabela_apuracao">
     <thead>
         <tr>
             <th>ID</th>
@@ -24,29 +22,11 @@ $periodos = ['' => '--Selecione--', 1 => 'Mensal', 2 => 'Semestral', 3 => 'Anual
     </thead>
 
     <tbody>
-        @foreach($indicators as $indicator)
-        <tr>
-            <td>{{$indicator->id}}</td>
-            <td>{{$indicator->sigla}}</td>
-            <td>{{$indicator->index->sigla}}</td>
-            <td>{{$indicator->nome_periodicidade}}</td>
-            <td>
-                @if($indicator->getDateLastCalculation())
-                {{$indicator->getDateLastCalculation()->format('d/m/Y H:i:s')}}
-                @endif
-            </td>
-            <td>{{$indicator->getValorLastCalculation()}}</td>
-
-            <td class="col-md-2">
-                <a class='btn btn-default' href="{{url("calculations/$indicator->id/create")}}">Incluir Valor</a>
-    <btn class='btn btn-default btn-history' data-id="{{$indicator->id}}">Histórico</btn>
-</td>
-
-</tr>
-@endforeach
 
 
-</tbody>
+
+    </tbody>
+    
 </table>
 <!--inicio do modal-historico-->
 <div class="modal fade" tabindex="-1"  id="modal-historico" role="dialog">
@@ -96,6 +76,53 @@ $periodos = ['' => '--Selecione--', 1 => 'Mensal', 2 => 'Semestral', 3 => 'Anual
 @push('scripts')
 <script src="{{asset("/js/bootbox.min.js")}}"></script>
 <script>
+  tabela_apuracao = $('#tabela_apuracao').DataTable({
+        dom: "<'row'<'col-sm-6'f><'col-sm-6'l>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+        iDisplayLength: 10,
+        serverSide: true,
+        ajax: "ajax/calculationTable",
+        columns: [
+            {data: "id", name: "id"},
+            {data: "sigla", name: "sigla"},
+            {data: "index_sigla", name: "index_sigla"},
+            {data: "periodicidade_nome", name: "periodicidade_nome"},
+            {data: "ultima_apuracao_data", name: "ultima_apuracao_data"},
+            {data: "ultima_apuracao_valor", name: "ultima_apuracao_valor"},
+            {data: "acoes"}
+        ],
+        "order": [0, 'desc'],
+        drawCallback: ativacoesTabelaApuracao,
+        "bStateSave": true,
+        "columnDefs": [{
+                "targets": [-1, -2, -3],
+                "orderable": false
+            }],
+        processing: true,
+        autoWidth: false,
+        oLanguage: {
+
+            'sProcessing': "<div id='loader'>Carregando...</div>",
+            "sSearch": "<span class='glyphicon glyphicon-search'></span> Pesquisar: ",
+            "sLengthMenu": "Mostrar _MENU_ registros por página",
+            "sZeroRecords": "Nenhum registro encontrado",
+            "sInfo": "Mostrando _START_ / _END_ de _TOTAL_ registro(s)",
+            "sInfoEmpty": "<span class='text-danger'>Mostrando 0 / 0 de 0 registros</span>",
+            "sInfoFiltered": "<span class='text-danger'>(filtrado de _MAX_ registros)</span>",
+            "oPaginate": {
+                "sFirst": "Início",
+                "sPrevious": "Anterior",
+                "sNext": "Próximo",
+                "sLast": "Último"
+            }
+        }
+
+    });  
+    
+    
+    
+    
 table_historico = $('#tabela-modal-historico').DataTable({
     "iDisplayLength": 10,
     "ordering": false,
@@ -125,15 +152,10 @@ table_historico = $('#tabela-modal-historico').DataTable({
 
 });//fim table_ajax
 
-$(".btn-history").click(function () {
-    var id = this.dataset.id;
-    table_historico.ajax.url("calculations/" + id + "/show").load();
-    $('#modal-historico').modal('show');
 
-});
 
 function excluirCalculation(href) {
-    
+
     $.ajax({
         url: href,
         method: 'delete',
@@ -193,6 +215,16 @@ function getColumnsTableHistorico() {
     return columns;
 
 
+}
+
+
+function ativacoesTabelaApuracao(){
+    $(".btn-history").click(function () {
+    var id = this.dataset.id;
+    table_historico.ajax.url("calculations/" + id + "/show").load();
+    $('#modal-historico').modal('show');
+
+});
 }
 
 

@@ -45,5 +45,6 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/atualizarDatasFimCalculations', 'CalculationController@atualizarTodosCalculations');
 
     Route::get('/ajax/indicatorTable', 'IndicatorController@indicatorTable')->name('ajax.indicatorTable');
+    Route::get('/ajax/calculationTable', 'CalculationController@calculationTable')->name('ajax.calculationTable');
 
 });

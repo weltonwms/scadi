@@ -7,12 +7,13 @@ use App\Http\Requests\CalculationRequest;
 use App\Calculation;
 use App\Indicator;
 use App\Index;
+use App\Helpers\CalculationDatatable;
 
 class CalculationController extends Controller {
 
     public function __construct() {
 
-        $this->middleware('calculation')->except(['index','atualizarTodosCalculations','destroy']);
+        $this->middleware('calculation')->except(['index','atualizarTodosCalculations','destroy','calculationTable']);
     }
 
     public function index() {
@@ -20,15 +21,23 @@ class CalculationController extends Controller {
 //       dd(Indicator::getPermitidos(request()) );
 
         $dados = [
-            'indicators' => Indicator::getPermitidos(request()),
-            'indices' => Index::pluck('sigla', 'id')->prepend('--Selecione--', ''),
-            'indicatorsList' => Indicator::getPermitidos()->pluck('sigla', 'id')->prepend('--Selecione--', '')
+            'indicators' => Indicator::getPermitidos(),
+            
         ];
 //        $c= Calculation::find(770);
 //        dd($c->getAttributes());
 
         return view('calculations.index', $dados);
     }
+    
+    
+    public function calculationTable() {
+        $request= request()->all();
+        $table = new CalculationDatatable();
+        $resposta = $table->getTable($request);
+        return $resposta;
+    }
+    
 
     public function create(Indicator $indicator) {
         // dd($indicator->getLastPeriodCalculationValid());

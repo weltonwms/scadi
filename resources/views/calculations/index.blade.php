@@ -3,6 +3,31 @@
 
 <h4>Apurações</h4>
 <hr>
+<?php
+$periodos = ['' => '--Selecione--', 1 => 'Mensal', 5 => 'Bimestral', 4 => 'Trimestral', 2 => 'Semestral', 3 => 'Anual'];
+?>
+<div class="row filters">
+    <form class="form-inline">
+        <?php $attr = ['class' => 'form-control input-sm'] ?>
+
+        <div class="form-group">
+            <label for="">Periodicidade</label>
+
+            {!!Form::select('periodicidade', $periodos, null,$attr )!!}
+        </div>
+        <div class="form-group">
+            <label for="">Indice</label>
+
+            {!!Form::select('index', $indices, null,$attr )!!}
+        </div>
+        <div class="form-group">
+            <btn class="btn btn-default btn-limpar" >Limpar</btn>
+        </div>
+
+
+
+    </form>
+</div>
 
 
 <br>
@@ -226,6 +251,34 @@ function ativacoesTabelaApuracao(){
 
 });
 }
+
+
+ $('select[name=periodicidade]').change(function () {
+        var valor = this.value ? this.value : '';
+        tabela_apuracao.column(3).search(valor).draw();
+
+    });
+
+
+    $('select[name=index]').change(function () {
+        var valor = this.value ? this.value : '';
+        tabela_apuracao.column(2).search(valor).draw();
+    });
+
+    $(".btn-limpar").click(function () {
+        $('select[name=periodicidade]').val('');
+        $('select[name=index]').val('');
+        tabela_apuracao.column(3).search('');
+        tabela_apuracao.column(2).search('');
+        tabela_apuracao.search('').draw();
+    });
+
+    $(document).ready(function () {
+        var valorSearch1 = tabela_apuracao.column(3).search();
+        var valorSearch2 = tabela_apuracao.column(2).search();
+        $('select[name=periodicidade]').val(valorSearch1);
+        $('select[name=index]').val(valorSearch2);
+    });
 
 
 </script>

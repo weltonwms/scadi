@@ -27,7 +27,7 @@ class CalculationDatatable {
                 ->where('group_indicator.group_id', $group_id);
     }
 
-    private function pesquisa($search) {
+    private function pesquisa($search, $searchPeriodicidade = null, $searchIndex = null) {
 
         if ($search):
             $this->query->where(function($query) use ($search) { //QUERY GRUPO. Equivalente a colocar parenteses em um monte de where
@@ -36,6 +36,15 @@ class CalculationDatatable {
                         ->orWhere('indicators_periodicidade.description', 'like', "%$search%")
                         ->orWhere('indices.sigla', 'like', "%$search%");
             });
+        endif;
+        
+        if ($searchPeriodicidade):
+            $this->query->where('indicators.periodicidade', $searchPeriodicidade);
+
+        endif;
+
+        if ($searchIndex):
+            $this->query->where('indicators.index_id', $searchIndex);
         endif;
 
         
@@ -53,12 +62,13 @@ class CalculationDatatable {
         $recordsFiltered = $total;
         $this->start();
 
-
-        if ($req['search']['value']):
-            $this->pesquisa($req['search']['value']);
+        $searchPeriodicidade = $req['columns'][3]['search']['value']; //posicao 3 pode alterar no frontend
+        $searchIndex = $req['columns'][2]['search']['value']; //posicao 2 pode alterar no frontend
+        if ($req['search']['value'] || $searchPeriodicidade || $searchIndex):
+            $this->pesquisa($req['search']['value'], $searchPeriodicidade, $searchIndex);
             $recordsFiltered = $this->query->count(); //zera a query, por isso é necessário repetir a pesquisa
             $this->start();
-            $this->pesquisa($req['search']['value']);
+            $this->pesquisa($req['search']['value'], $searchPeriodicidade, $searchIndex);
         endif;
 
         $order = $req['columns'][$req['order']['0']['column']]['name'];

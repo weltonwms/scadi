@@ -18,11 +18,9 @@ class CalculationController extends Controller {
 
     public function index() {
 
-//       dd(Indicator::getPermitidos(request()) );
-
         $dados = [
-            'indicators' => Indicator::getPermitidos(),
-            
+            //'indicators' => Indicator::getPermitidos(),
+             'indices' => Index::pluck('sigla', 'id')->prepend('-Selecione-', ''),
         ];
 //        $c= Calculation::find(770);
 //        dd($c->getAttributes());

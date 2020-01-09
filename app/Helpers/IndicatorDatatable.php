@@ -20,7 +20,13 @@ class IndicatorDatatable {
                 ->join('indicators_tipo', 'indicators.tipo', '=', 'indicators_tipo.id')
                 ->join('indicators_periodicidade', 'indicators.periodicidade', '=', 'indicators_periodicidade.id')
                 ->join('indices', 'indicators.index_id', '=', 'indices.id')
-                ->select('indicators.id', 'indicators.sigla', 'indicators.name', 'indicators_tipo.description as tipo_nome', 'indicators_periodicidade.description as periodicidade_nome', 'indices.sigla as index_sigla');
+                ->leftJoin('group_indicator', 'group_indicator.indicator_id', '=', 'indicators.id')
+                ->leftJoin('groups', 'group_indicator.group_id', '=', 'groups.id')
+                ->select('indicators.id', 'indicators.sigla', 'indicators.name'
+                        , 'indicators_tipo.description as tipo_nome', 'indicators_periodicidade.description as periodicidade_nome'
+                        , 'indices.sigla as index_sigla' 
+                        ,\DB::raw("group_concat(groups.name separator ' | ') as grupos_lista") )
+                ->groupBy('indicators.id', 'indicators.sigla', 'indicators.name', 'indicators_tipo.description', 'indicators_periodicidade.description', 'indices.sigla');
     }
 
     private function pesquisa($search, $searchPeriodicidade = null, $searchIndex = null) {
@@ -32,7 +38,8 @@ class IndicatorDatatable {
                         ->orWhere('indicators.name', 'like', "%$search%")
                         ->orWhere('indicators_tipo.description', 'like', "%$search%")
                         ->orWhere('indicators_periodicidade.description', 'like', "%$search%")
-                        ->orWhere('indices.sigla', 'like', "%$search%");
+                        ->orWhere('indices.sigla', 'like', "%$search%")
+                        ->orWhere('groups.name', 'like', "%$search%");
             });
         endif;
 
@@ -44,7 +51,7 @@ class IndicatorDatatable {
         if ($searchIndex):
             $this->query->where('indicators.index_id', $searchIndex);
         endif;
-        $this->debug = 'debug qualquer';
+        //$this->debug = 'debug qualquer';
     }
 
     /**
@@ -53,6 +60,7 @@ class IndicatorDatatable {
      * @return string json utilizado por Datatables
      */
     public function getTable($req) {
+       
         $total = \DB::table('indicators')->count();
         $recordsFiltered = $total;
         $this->start();
@@ -61,7 +69,7 @@ class IndicatorDatatable {
 
         if ($req['search']['value'] || $searchPeriodicidade || $searchIndex):
             $this->pesquisa($req['search']['value'], $searchPeriodicidade, $searchIndex);
-            $recordsFiltered = $this->query->count(); //zera a query, por isso é necessário repetir a pesquisa
+            $recordsFiltered =$this->query->get()->count(); //zera a query, por isso é necessário repetir a pesquisa
             $this->start();
             $this->pesquisa($req['search']['value'], $searchPeriodicidade, $searchIndex);
         endif;
@@ -70,8 +78,9 @@ class IndicatorDatatable {
         $direction = $req['order']['0']['dir'];
         $this->query->orderBy($order, $direction);
         $this->query->skip($req["start"])->take($req["length"]);
+        
         $indicators = $this->query->get();
-
+        
         $resposta = new \stdClass();
         $resposta->draw = $req['draw'];
         $resposta->recordsTotal = (int) $total;
@@ -83,7 +92,7 @@ class IndicatorDatatable {
 
     private function outputList($indicators) {
         foreach ($indicators as $indicator):
-            $indicator->grupos_lista = $indicator->getGroupsList();
+            //$indicator->grupos_lista = $indicator->getGroupsList();
             $clonar = ' <a class="btn btn-default"
                             data-toggle="tooltip"
                             title="Clonar"
